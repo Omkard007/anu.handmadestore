@@ -58,7 +58,7 @@ function CheckoutForm({ amount, orderId, onSuccess }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4 flex flex-col md:flex-row">
       <PaymentElement />
       {errorMessage && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-800 text-sm">
@@ -290,20 +290,20 @@ export default function App() {
   const featuredProducts = products.filter(p => p.isFeatured).slice(0, 3);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-amber-50">
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-amber-50 overflow-x-hidden">
       {/* Header */}
       <motion.header
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         className="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-40 border-b border-pink-100"
       >
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="container mx-auto px-2 py-2 sm:px-4 sm:py-4 flex items-center justify-between">
           <motion.div
             className="flex items-center space-x-2"
             whileHover={{ scale: 1.05 }}
           >
             <Sparkles className="w-8 h-8 text-rose-400" />
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-pink-500 via-rose-500 to-amber-500 bg-clip-text text-transparent">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-pink-500 via-rose-500 to-amber-500 bg-clip-text text-transparent">
               Anu.handmadestore
             </h1>
           </motion.div>
@@ -600,7 +600,7 @@ export default function App() {
                     <p className="text-gray-500">Your cart is empty</p>
                   </div>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="space-y-4 md:space-y-0 md:flex md:justify-between md:space-y-0 md:flex md:justify-between">
                     {cart.map((item) => (
                       <motion.div
                         key={item.productId}
