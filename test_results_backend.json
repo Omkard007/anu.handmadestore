@@ -1,0 +1,112 @@
+{
+  "summary": {
+    "total": 17,
+    "passed": 17,
+    "failed": 0,
+    "success_rate": "100.0%"
+  },
+  "results": [
+    {
+      "test": "GET /api/products - Fetch all products",
+      "success": true,
+      "details": "Retrieved 15 products successfully",
+      "timestamp": "2026-01-24T05:53:24.556910"
+    },
+    {
+      "test": "GET /api/products?category=Earring - Filter by category",
+      "success": true,
+      "details": "Retrieved 3 earrings successfully",
+      "timestamp": "2026-01-24T05:53:24.616109"
+    },
+    {
+      "test": "GET /api/products/1 - Get single product",
+      "success": true,
+      "details": "Retrieved product: Royal Gold Jhumkas",
+      "timestamp": "2026-01-24T05:53:24.656153"
+    },
+    {
+      "test": "GET /api/products/999 - Non-existent product",
+      "success": true,
+      "details": "Correctly returned 404 for non-existent product",
+      "timestamp": "2026-01-24T05:53:24.750107"
+    },
+    {
+      "test": "POST /api/cart - Add product to cart",
+      "success": true,
+      "details": "Successfully added product to cart",
+      "timestamp": "2026-01-24T05:53:24.839959"
+    },
+    {
+      "test": "GET /api/cart - Get cart items",
+      "success": true,
+      "details": "Retrieved 1 cart items",
+      "timestamp": "2026-01-24T05:53:24.928892"
+    },
+    {
+      "test": "PUT /api/cart/1 - Update cart item quantity",
+      "success": true,
+      "details": "Successfully updated cart item quantity",
+      "timestamp": "2026-01-24T05:53:25.024871"
+    },
+    {
+      "test": "POST /api/cart - Add second product",
+      "success": true,
+      "details": "Successfully added second product to cart",
+      "timestamp": "2026-01-24T05:53:25.118121"
+    },
+    {
+      "test": "DELETE /api/cart/7 - Remove item from cart",
+      "success": true,
+      "details": "Successfully removed item from cart",
+      "timestamp": "2026-01-24T05:53:25.175133"
+    },
+    {
+      "test": "POST /api/create-payment-intent - Create payment intent",
+      "success": true,
+      "details": "Created payment intent with amount \u20b9389.97",
+      "timestamp": "2026-01-24T05:53:25.707189"
+    },
+    {
+      "test": "POST /api/orders - Create order",
+      "success": true,
+      "details": "Created order with ID: b1d82be9-dba1-476d-9204-86418e60690d",
+      "timestamp": "2026-01-24T05:53:25.830873"
+    },
+    {
+      "test": "Cart cleared after order creation",
+      "success": true,
+      "details": "Cart successfully cleared after order",
+      "timestamp": "2026-01-24T05:53:25.918356"
+    },
+    {
+      "test": "GET /api/orders - Get orders for session",
+      "success": true,
+      "details": "Retrieved 1 orders",
+      "timestamp": "2026-01-24T05:53:26.014257"
+    },
+    {
+      "test": "GET /api/orders/{orderId} - Get single order",
+      "success": true,
+      "details": "Retrieved order: b1d82be9-dba1-476d-9204-86418e60690d",
+      "timestamp": "2026-01-24T05:53:26.057479"
+    },
+    {
+      "test": "PUT /api/orders/{orderId} - Update order status",
+      "success": true,
+      "details": "Successfully updated order status",
+      "timestamp": "2026-01-24T05:53:26.210619"
+    },
+    {
+      "test": "Error handling - Non-existent product in cart",
+      "success": true,
+      "details": "Correctly handled non-existent product",
+      "timestamp": "2026-01-24T05:53:26.256163"
+    },
+    {
+      "test": "Error handling - Invalid endpoint",
+      "success": true,
+      "details": "Correctly handled invalid endpoint",
+      "timestamp": "2026-01-24T05:53:26.356070"
+    }
+  ]
+}
