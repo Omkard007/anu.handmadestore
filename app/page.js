@@ -304,7 +304,7 @@ export default function App() {
           >
             <Sparkles className="w-8 h-8 text-rose-400" />
             <h1 className="text-3xl font-bold bg-gradient-to-r from-pink-500 via-rose-500 to-amber-500 bg-clip-text text-transparent">
-              GlamCharms
+              Anu.handmadestore
             </h1>
           </motion.div>
           
@@ -351,7 +351,7 @@ export default function App() {
             transition={{ delay: 0.4 }}
             className="text-xl text-gray-600 mb-8"
           >
-            Discover timeless beauty with our exquisite handcrafted pieces
+            Discover timeless beauty with our exquisite handcrafted pieces , Handmade with love.
           </motion.p>
         </div>
       </motion.section>
@@ -856,8 +856,8 @@ export default function App() {
       {/* Footer */}
       <footer className="bg-white/80 backdrop-blur-md border-t border-pink-100 py-8 mt-20">
         <div className="container mx-auto px-4 text-center text-gray-600">
-          <p className="mb-2">© 2025 GlamCharms. All rights reserved.</p>
-          <p className="text-sm">Crafted with ❤️ for jewelry lovers</p>
+          <p className="mb-2">© 2025 Anu.handmadestore. All rights reserved.</p>
+          <p className="text-sm">Handmade with love ❤️ </p>
         </div>
       </footer>
     </div>
