@@ -10,7 +10,7 @@ export function Footer() {
             <div className="flex items-center gap-2 mb-4">
               <Sparkles className="h-6 w-6" />
               <span className="font-display text-2xl font-semibold">
-                Shree Collection
+                Anu's Handmade Store
               </span>
             </div>
             <p className="text-primary-foreground/80 text-sm leading-relaxed">
@@ -26,7 +26,6 @@ export function Footer() {
               <li><a href="#collections" className="hover:text-primary-foreground transition-colors">Collections</a></li>
               <li><a href="#featured" className="hover:text-primary-foreground transition-colors">Featured</a></li>
               <li><a href="#" className="hover:text-primary-foreground transition-colors">About Us</a></li>
-              <li><a href="#" className="hover:text-primary-foreground transition-colors">Contact</a></li>
             </ul>
           </div>
 
@@ -40,7 +39,7 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="h-4 w-4" />
-                <span>+91 98765 43210</span>
+                <span>+91 98765 XXXXX</span>
               </li>
             </ul>
             <div className="flex gap-4 mt-4">
@@ -55,7 +54,7 @@ export function Footer() {
         </div>
 
         <div className="border-t border-primary-foreground/20 mt-8 pt-8 text-center text-sm text-primary-foreground/60">
-          <p>&copy; {new Date().getFullYear()} Shree Collection. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Anu's Handmade Store. All rights reserved.</p>
         </div>
       </div>
     </footer>

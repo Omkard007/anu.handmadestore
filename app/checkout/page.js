@@ -94,7 +94,7 @@ function CheckoutContent() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          amount: totalPrice,
+          amount: totalPrice + 80, // Add shipping cost
         }),
       });
 
@@ -413,7 +413,7 @@ function CheckoutContent() {
                 </div>
                 <div className="flex justify-between text-muted-foreground">
                   <span>Shipping</span>
-                  <span>Free</span>
+                  <span>₹80</span>
                 </div>
               </div>
 
@@ -422,7 +422,7 @@ function CheckoutContent() {
               <div className="flex justify-between items-center mb-6">
                 <span className="font-semibold text-lg">Total</span>
                 <span className="font-display text-2xl font-bold text-primary">
-                  ₹{totalPrice}
+                  ₹{totalPrice + 80}
                 </span>
               </div>
               

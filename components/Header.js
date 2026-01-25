@@ -9,19 +9,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 export function Header({ onCartClick }) {
   const { totalItems } = useCart();
 
-  const NavLinks = () => (
-    <>
-      <a href="#collections" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-        Collections
-      </a>
-      <a href="#featured" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-        Featured
-      </a>
-      <a href="#about" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-        About
-      </a>
-    </>
-  );
+
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
@@ -29,14 +17,12 @@ export function Header({ onCartClick }) {
         <Link href="/" className="flex items-center gap-2 group">
           <Sparkles className="h-6 w-6 text-accent transition-transform group-hover:rotate-12" />
           <span className="font-display text-2xl font-semibold tracking-tight">
-            Shree <span className="text-gradient-gold">Collection</span>
+            Anu's  <span className="text-gradient-gold">Handmade Store</span>
           </span>
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-8">
-          <NavLinks />
-        </nav>
+
 
         <div className="flex items-center gap-4">
           <Button variant="outline" size="icon" className="relative" onClick={onCartClick}>
