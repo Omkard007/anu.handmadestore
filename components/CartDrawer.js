@@ -67,7 +67,7 @@ export function CartDrawer({ isOpen, onClose }) {
                     <img
                       src={item.product.imagePath}
                       alt={item.product.name}
-                      className="h-full w-full object-cover"
+                      className="h-full w-full object-contain"
                       onError={(e) => {
                         (e.target).src = '/placeholder.svg';
                       }}

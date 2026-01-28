@@ -386,7 +386,7 @@ function CheckoutContent() {
                       <img
                         src={item.product.imagePath}
                         alt={item.product.name}
-                        className="h-full w-full object-cover"
+                        className="h-full w-full object-contain"
                       />
                     </div>
                     <div className="flex-1 min-w-0">
