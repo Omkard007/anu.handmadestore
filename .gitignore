@@ -5,6 +5,7 @@
 .vscode/
 
 # Dependencies
+.env
 node_modules/
 /node_modules
 /.pnp
@@ -82,3 +83,4 @@ node_modules/@next/swc-linux-arm64-gnu/next-swc.linux-arm64-gnu.node
 
 #environment VARIABLE
 .env
+/lib/generated/prisma

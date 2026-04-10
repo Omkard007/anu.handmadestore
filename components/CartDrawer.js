@@ -1,18 +1,23 @@
 import { X, Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
-
+import { useAuth } from '@/context/AuthContext';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
-
-
+import { toast } from 'sonner';
 
 export function CartDrawer({ isOpen, onClose }) {
   const { items, updateQuantity, removeFromCart, totalPrice, totalItems } = useCart();
+  const { user } = useAuth();
   const router = useRouter();
 
   const handleCheckout = () => {
     onClose();
+    if (!user) {
+      toast.error('Please login to proceed to checkout');
+      router.push('/auth');
+      return;
+    }
     router.push('/checkout');
   };
 

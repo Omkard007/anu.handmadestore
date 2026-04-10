@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,6 +28,7 @@ export default function CheckoutPage() {
 
 function CheckoutContent() {
   const { items, totalPrice, clearCart } = useCart();
+  const { user, isLoading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
@@ -38,12 +40,26 @@ function CheckoutContent() {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
-    email: "",
+    email: user?.email || "",
     phone: "",
     address: "",
     city: "",
     pincode: "",
   });
+
+  // Pre-fill email if user changes
+  useEffect(() => {
+    if (user?.email) {
+      setFormData(prev => ({ ...prev, email: user.email }));
+    }
+  }, [user]);
+
+  // Check if user is authenticated
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.push('/auth');
+    }
+  }, [user, isLoading, router]);
 
   // Check for return from payment (if redirected, though Razorpay is usually modal)
   useEffect(() => {
@@ -54,6 +70,14 @@ function CheckoutContent() {
       clearCart();
     }
   }, [searchParams, clearCart]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -76,12 +100,34 @@ function CheckoutContent() {
 
     if (paymentMethod === "cod") {
       setIsProcessing(true);
-      // Simulate API delay
-      setTimeout(() => {
-        setIsOrderPlaced(true);
-        clearCart();
+      try {
+        const response = await fetch("/api/orders/cod", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            items,
+            totalAmount: totalPrice + 80,
+            shippingDetails: formData
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          setIsOrderPlaced(true);
+          clearCart();
+        } else {
+          throw new Error(data.error || "Failed to place COD order");
+        }
+      } catch (error) {
+        toast({
+          title: "Order Failed",
+          description: error.message,
+          variant: "destructive",
+        });
+      } finally {
         setIsProcessing(false);
-      }, 1500);
+      }
       return;
     }
 
@@ -89,7 +135,7 @@ function CheckoutContent() {
     setIsProcessing(true);
 
     try {
-      // 1. Create Order
+      // 1. Create Razorpay Order
       const response = await fetch("/api/razorpay/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -98,25 +144,57 @@ function CheckoutContent() {
         }),
       });
 
-      const data = await response.json();
+      const orderData = await response.json();
 
-      if (data.error) {
-        throw new Error(data.error);
+      if (orderData.error) {
+        throw new Error(orderData.error);
       }
 
       // 2. Open Razorpay Checkout
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        amount: data.amount,
-        currency: data.currency,
+        amount: orderData.amount,
+        currency: orderData.currency,
         name: "Anu's Handmade Store",
         description: "Purchase Order",
-        order_id: data.id,
-        handler: function (response) {
-          // Success Callback
-          console.log("Payment Success:", response);
-          setIsOrderPlaced(true);
-          clearCart();
+        order_id: orderData.id,
+        handler: async function (response) {
+          // Success Callback: Verify on backend and create DB entry
+          try {
+            const verifyResponse = await fetch("/api/razorpay/verify-payment", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                items,
+                totalAmount: totalPrice + 80
+              }),
+            });
+
+            const verifyData = await verifyResponse.json();
+
+            if (verifyResponse.ok) {
+              setIsOrderPlaced(true);
+              clearCart();
+            } else {
+              toast({
+                title: "Payment Verification Failed",
+                description: verifyData.error || "Please contact support if your amount was deducted.",
+                variant: "destructive",
+              });
+            }
+          } catch (error) {
+            console.error("Verification Error:", error);
+            toast({
+              title: "Error",
+              description: "An error occurred while verifying your payment.",
+              variant: "destructive",
+            });
+          } finally {
+            setIsProcessing(false);
+          }
         },
         prefill: {
           name: `${formData.firstName} ${formData.lastName}`.trim(),
@@ -124,7 +202,7 @@ function CheckoutContent() {
           contact: formData.phone,
         },
         theme: {
-          color: "#000000", // Customize color to match theme if needed
+          color: "#000000",
         },
         modal: {
           ondismiss: function() {

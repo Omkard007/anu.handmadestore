@@ -1,9 +1,31 @@
-import { productsData } from '@/lib/productsData'
-;
+import { useState, useEffect, useMemo } from 'react';
 import { ProductCard } from './ProductCard';
+import { Skeleton } from './ui/skeleton';
 
 export function FeaturedProducts() {
-  const featuredProducts = productsData.filter((product) => product.isFeatured);
+  const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const response = await fetch('/api/products');
+        if (response.ok) {
+          const data = await response.json();
+          setProducts(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch products:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchProducts();
+  }, []);
+
+  const featuredProducts = useMemo(() => 
+    products.filter((product) => product.isFeatured),
+  [products]);
 
   return (
     <section id="featured" className="py-16 md:py-24 bg-secondary/30">
@@ -21,14 +43,27 @@ export function FeaturedProducts() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {featuredProducts.map((product, index) => (
-            <div
-              key={product.id}
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              <ProductCard product={product} />
-            </div>
-          ))}
+          {isLoading ? (
+            Array.from({ length: 4 }).map((_, index) => (
+              <div key={index} className="space-y-4">
+                <Skeleton className="aspect-square w-full rounded-xl" />
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-1/4" />
+                  <Skeleton className="h-6 w-3/4" />
+                  <Skeleton className="h-4 w-1/2" />
+                </div>
+              </div>
+            ))
+          ) : (
+            featuredProducts.map((product, index) => (
+              <div
+                key={product.id}
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <ProductCard product={product} />
+              </div>
+            ))
+          )}
         </div>
       </div>
     </section>

@@ -3,19 +3,27 @@ import { Button } from '@/components/ui/button';
 import { Product } from '@/lib/productsData'
 ;
 import { useCart } from '@/context/CartContext';
+import { useAuth } from '@/context/AuthContext';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-
-
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 export function ProductCard({ product }) {
   const { addToCart, items } = useCart();
+  const { user } = useAuth();
+  const router = useRouter();
   const [imageError, setImageError] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
 
   const isInCart = items.some(item => item.product.id === product.id);
 
   const handleAddToCart = () => {
+    if (!user) {
+      toast.error('Please login to add items to your cart');
+      router.push('/auth');
+      return;
+    }
     setIsAdding(true);
     addToCart(product);
     setTimeout(() => setIsAdding(false), 1000);

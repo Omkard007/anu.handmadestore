@@ -1,19 +1,37 @@
 
-import { useState, useMemo } from 'react';
-import { productsData, Category } from '@/lib/productsData'
-;
+import { useState, useMemo, useEffect } from 'react';
 import { CategoryFilter } from './CategoryFilter';
 import { ProductCard } from './ProductCard';
+import { Skeleton } from './ui/skeleton';
 
 export function ProductGrid() {
+  const [products, setProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const response = await fetch('/api/products');
+        if (response.ok) {
+          const data = await response.json();
+          setProducts(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch products:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchProducts();
+  }, []);
 
   const filteredProducts = useMemo(() => {
     if (selectedCategory === 'All') {
-      return productsData;
+      return products;
     }
-    return productsData.filter((product) => product.category === selectedCategory);
-  }, [selectedCategory]);
+    return products.filter((product) => product.category === selectedCategory);
+  }, [selectedCategory, products]);
 
   return (
     <section id="collections" className="py-16 md:py-24">
@@ -35,17 +53,30 @@ export function ProductGrid() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredProducts.map((product, index) => (
-            <div
-              key={product.id}
-              style={{ animationDelay: `${index * 0.05}s` }}
-            >
-              <ProductCard product={product} />
-            </div>
-          ))}
+          {isLoading ? (
+            Array.from({ length: 8 }).map((_, index) => (
+              <div key={index} className="space-y-4">
+                <Skeleton className="aspect-square w-full rounded-xl" />
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-1/4" />
+                  <Skeleton className="h-6 w-3/4" />
+                  <Skeleton className="h-4 w-1/2" />
+                </div>
+              </div>
+            ))
+          ) : (
+            filteredProducts.map((product, index) => (
+              <div
+                key={product.id}
+                style={{ animationDelay: `${index * 0.05}s` }}
+              >
+                <ProductCard product={product} />
+              </div>
+            ))
+          )}
         </div>
 
-        {filteredProducts.length === 0 && (
+        {!isLoading && filteredProducts.length === 0 && (
           <div className="text-center py-12">
             <p className="text-muted-foreground">No products found in this category.</p>
           </div>

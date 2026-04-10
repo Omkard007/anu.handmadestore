@@ -1,13 +1,15 @@
 "use client";
 
-import { ShoppingBag, Sparkles, Menu } from "lucide-react";
+import { ShoppingBag, Sparkles, Menu, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export function Header({ onCartClick }) {
   const { totalItems } = useCart();
+  const { user, logout } = useAuth();
 
 
 
@@ -25,6 +27,25 @@ export function Header({ onCartClick }) {
 
 
         <div className="flex items-center gap-4">
+          {user ? (
+            <div className="hidden md:flex items-center gap-4">
+              <span className="text-sm text-muted-foreground truncate max-w-[150px]">
+                {user.email}
+              </span>
+              <Button variant="ghost" size="sm" onClick={logout} className="flex items-center gap-2">
+                <LogOut className="h-4 w-4" />
+                Logout
+              </Button>
+            </div>
+          ) : (
+            <Link href="/auth">
+              <Button variant="ghost" size="sm" className="hidden md:flex items-center gap-2">
+                <User className="h-4 w-4" />
+                Login
+              </Button>
+            </Link>
+          )}
+
           <Button variant="outline" size="icon" className="relative" onClick={onCartClick}>
             <ShoppingBag className="h-5 w-5" />
             {totalItems > 0 && (
@@ -44,6 +65,21 @@ export function Header({ onCartClick }) {
               </SheetTrigger>
               <SheetContent side="right">
                 <nav className="flex flex-col gap-6 mt-8">
+                  {user ? (
+                    <>
+                      <div className="border-b pb-4">
+                        <p className="text-sm font-medium">{user.email}</p>
+                        <Button variant="ghost" size="sm" onClick={logout} className="w-full justify-start px-0 mt-2 text-red-500">
+                          <LogOut className="h-4 w-4 mr-2" />
+                          Logout
+                        </Button>
+                      </div>
+                    </>
+                  ) : (
+                    <Link href="/auth" className="text-lg font-medium hover:text-primary transition-colors">
+                      Login
+                    </Link>
+                  )}
                   <a href="#collections" className="text-lg font-medium hover:text-primary transition-colors">
                     Collections
                   </a>
