@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
+import { jwtVerify } from 'jose';
 
-export function middleware(request) {
+export async function middleware(request) {
   const token = request.cookies.get('token')?.value;
   const { pathname } = request.nextUrl;
 
@@ -26,6 +27,22 @@ export function middleware(request) {
   // Redirect to home if already logged in and trying to access auth page
   if (pathname === '/auth' && token) {
     return NextResponse.redirect(new URL('/', request.url));
+  }
+
+  // Admin route protection
+  if (pathname.startsWith('/admin')) {
+    if (!token) {
+      return NextResponse.redirect(new URL('/auth', request.url));
+    }
+    try {
+      const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+      const { payload } = await jwtVerify(token, secret);
+      if (payload.role !== 'ADMIN') {
+        return NextResponse.redirect(new URL('/', request.url));
+      }
+    } catch (err) {
+      return NextResponse.redirect(new URL('/auth', request.url));
+    }
   }
 
   // Redirect to auth if trying to access a restricted path without a token

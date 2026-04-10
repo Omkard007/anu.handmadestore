@@ -28,7 +28,16 @@ export default function AuthPage() {
 
       if (result.success) {
         toast.success(type === 'login' ? 'Login successful!' : 'Account created and logged in!');
-        router.push('/');
+        
+        // Fetch current user to check role
+        const meRes = await fetch('/api/auth/me');
+        const meData = await meRes.json();
+        
+        if (meData.user?.role === 'ADMIN') {
+          router.push('/admin');
+        } else {
+          router.push('/');
+        }
         router.refresh();
       } else {
         toast.error(result.error || 'Something went wrong');
