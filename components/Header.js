@@ -1,6 +1,6 @@
 "use client";
 
-import { ShoppingBag, Sparkles, Menu, User, LogOut } from "lucide-react";
+import { ShoppingBag, Sparkles, Menu, User, LogOut, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
@@ -29,6 +29,14 @@ export function Header({ onCartClick }) {
         <div className="flex items-center gap-4">
           {user ? (
             <div className="hidden md:flex items-center gap-4">
+              {user.role === 'ADMIN' && (
+                <Link href="/admin">
+                  <Button variant="outline" size="sm" className="flex items-center gap-2 border-accent/50 hover:bg-accent/10">
+                    <LayoutDashboard className="h-4 w-4 text-accent" />
+                    Dashboard
+                  </Button>
+                </Link>
+              )}
               <span className="text-sm text-muted-foreground truncate max-w-[150px]">
                 {user.email}
               </span>
@@ -69,6 +77,12 @@ export function Header({ onCartClick }) {
                     <>
                       <div className="border-b pb-4">
                         <p className="text-sm font-medium">{user.email}</p>
+                        {user.role === 'ADMIN' && (
+                          <Link href="/admin" className="flex items-center gap-2 mt-4 text-accent font-medium hover:text-accent/80 transition-colors">
+                            <LayoutDashboard className="h-5 w-5" />
+                            Admin Dashboard
+                          </Link>
+                        )}
                         <Button variant="ghost" size="sm" onClick={logout} className="w-full justify-start px-0 mt-2 text-red-500">
                           <LogOut className="h-4 w-4 mr-2" />
                           Logout
