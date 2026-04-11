@@ -32,12 +32,44 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { toast } from 'sonner';
 
+function AdminProductImage({ productId, initialImage }) {
+  const [imageUrl, setImageUrl] = useState(initialImage || null);
+  const [loading, setLoading] = useState(!initialImage);
+
+  useEffect(() => {
+    if (!initialImage && productId) {
+      fetch(`/api/products/${productId}/image`)
+        .then(res => res.json())
+        .then(data => {
+          setImageUrl(data.imagePath);
+          setLoading(false);
+        })
+        .catch(() => setLoading(false));
+    }
+  }, [productId, initialImage]);
+
+  if (loading) return <div className="w-10 h-10 bg-muted animate-pulse rounded-md" />;
+  if (!imageUrl) return <div className="w-10 h-10 bg-secondary flex items-center justify-center rounded-md">💍</div>;
+
+  return (
+    <img
+      src={imageUrl}
+      alt="Product"
+      className="w-10 h-10 object-cover rounded-md border"
+    />
+  );
+}
+
 export default function ProductsPage() {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitLoading, setIsSubmitLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [skip, setSkip] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const PAGE_SIZE = 20;
+
   const [formData, setFormData] = useState({
     name: '',
     price: '',
@@ -50,18 +82,44 @@ export default function ProductsPage() {
   });
 
   useEffect(() => {
-    fetchProducts();
+    fetchInitialProducts();
   }, []);
 
-  const fetchProducts = async () => {
+  const fetchInitialProducts = async () => {
+    setIsLoading(true);
     try {
-      const response = await fetch('/api/admin/products');
+      const response = await fetch(`/api/admin/products?limit=${PAGE_SIZE}&skip=0&excludeImage=true`);
       const data = await response.json();
       setProducts(data);
+      setHasMore(data.length === PAGE_SIZE);
+      setSkip(PAGE_SIZE);
     } catch (error) {
       toast.error('Failed to fetch products');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const fetchProducts = async () => {
+    // Standard refresh after add/edit/delete
+    try {
+      const response = await fetch(`/api/admin/products?limit=${skip}&skip=0&excludeImage=true`);
+      const data = await response.json();
+      setProducts(data);
+    } catch (error) {
+      toast.error('Failed to refresh products');
+    }
+  };
+
+  const loadMore = async () => {
+    try {
+      const response = await fetch(`/api/admin/products?limit=${PAGE_SIZE}&skip=${skip}&excludeImage=true`);
+      const data = await response.json();
+      setProducts(prev => [...prev, ...data]);
+      setHasMore(data.length === PAGE_SIZE);
+      setSkip(prev => prev + PAGE_SIZE);
+    } catch (error) {
+      toast.error('Failed to load more products');
     }
   };
 
@@ -313,11 +371,7 @@ export default function ProductsPage() {
               products.map((product) => (
                 <TableRow key={product.id}>
                   <TableCell>
-                    <img
-                      src={product.imagePath}
-                      alt={product.name}
-                      className="w-10 h-10 object-cover rounded-md border"
-                    />
+                    <AdminProductImage productId={product.id} initialImage={product.imagePath} />
                   </TableCell>
                   <TableCell className="font-medium">{product.name}</TableCell>
                   <TableCell>{product.category}</TableCell>
@@ -356,6 +410,14 @@ export default function ProductsPage() {
           </TableBody>
         </Table>
       </div>
+
+      {hasMore && !isLoading && (
+        <div className="flex justify-center pt-4">
+          <Button variant="outline" onClick={loadMore}>
+            Load More Products
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

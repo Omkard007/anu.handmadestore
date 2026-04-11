@@ -31,29 +31,9 @@ export default function DashboardPage() {
 
   const fetchDashboardStats = async () => {
     try {
-      // For now, we'll fetch products and orders to calculate stats
-      const [productsRes, ordersRes] = await Promise.all([
-        fetch('/api/admin/products'),
-        fetch('/api/admin/orders')
-      ]);
-
-      const products = await productsRes.json();
-      const orders = await ordersRes.json();
-
-      const totalRevenue = orders
-        .filter(order => order.status !== 'CANCELLED')
-        .reduce((sum, order) => sum + order.totalAmount, 0);
-
-      // Unique customers based on email
-      const uniqueCustomers = new Set(orders.map(order => order.user.email)).size;
-
-      setStats({
-        revenue: totalRevenue,
-        orders: orders.length,
-        products: products.length,
-        customers: uniqueCustomers,
-        recentOrders: orders.slice(0, 5)
-      });
+      const response = await fetch('/api/admin/stats');
+      const data = await response.json();
+      setStats(data);
     } catch (error) {
       toast.error('Failed to fetch dashboard statistics');
     } finally {

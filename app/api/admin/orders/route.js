@@ -27,7 +27,23 @@ export async function GET(request) {
           select: { email: true }
         },
         items: {
-          include: { product: true }
+          include: { 
+            product: {
+              select: {
+                id: true,
+                name: true,
+                price: true,
+                category: true,
+                description: true,
+                inStock: true,
+                rating: true,
+                isFeatured: true,
+                createdAt: true,
+                updatedAt: true,
+                // exclude imagePath here
+              }
+            } 
+          }
         }
       },
       orderBy: { createdAt: 'desc' }

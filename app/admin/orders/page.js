@@ -52,6 +52,34 @@ const statusColors = {
   CANCELLED: "bg-red-100 text-red-800",
 };
 
+function OrderProductImage({ productId, initialImage }) {
+  const [imageUrl, setImageUrl] = useState(initialImage || null);
+  const [loading, setLoading] = useState(!initialImage);
+
+  useEffect(() => {
+    if (!initialImage && productId) {
+      fetch(`/api/products/${productId}/image`)
+        .then(res => res.json())
+        .then(data => {
+          setImageUrl(data.imagePath);
+          setLoading(false);
+        })
+        .catch(() => setLoading(false));
+    }
+  }, [productId, initialImage]);
+
+  if (loading) return <div className="w-12 h-12 bg-muted animate-pulse rounded border" />;
+  if (!imageUrl) return <div className="w-12 h-12 bg-secondary flex items-center justify-center rounded border">💍</div>;
+
+  return (
+    <img
+      src={imageUrl}
+      alt="Product"
+      className="w-12 h-12 object-cover rounded border"
+    />
+  );
+}
+
 export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -219,11 +247,7 @@ export default function OrdersPage() {
                   {selectedOrder.items.map((item) => (
                     <div key={item.id} className="p-3 flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <img 
-                          src={item.product.imagePath} 
-                          alt={item.product.name} 
-                          className="w-12 h-12 object-cover rounded border"
-                        />
+                        <OrderProductImage productId={item.product.id} initialImage={item.product.imagePath} />
                         <div>
                           <p className="font-medium">{item.product.name}</p>
                           <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>

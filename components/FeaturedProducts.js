@@ -1,28 +1,8 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { ProductCard } from './ProductCard';
 import { Skeleton } from './ui/skeleton';
 
-export function FeaturedProducts() {
-  const [products, setProducts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchProducts() {
-      try {
-        const response = await fetch('/api/products');
-        if (response.ok) {
-          const data = await response.json();
-          setProducts(data);
-        }
-      } catch (error) {
-        console.error('Failed to fetch products:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchProducts();
-  }, []);
-
+export function FeaturedProducts({ products = [], isLoading = true }) {
   const featuredProducts = useMemo(() => 
     products.filter((product) => product.isFeatured),
   [products]);

@@ -1,10 +1,10 @@
-import { Star, ShoppingBag, Check } from 'lucide-react';
+import { Star, ShoppingBag, Check, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Product } from '@/lib/productsData'
 ;
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
@@ -15,6 +15,30 @@ export function ProductCard({ product }) {
   const router = useRouter();
   const [imageError, setImageError] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
+  const [imageUrl, setImageUrl] = useState(product.imagePath || null);
+  const [isImageLoading, setIsImageLoading] = useState(!product.imagePath);
+
+  useEffect(() => {
+    if (!product.imagePath && product.id) {
+      const fetchImage = async () => {
+        try {
+          const response = await fetch(`/api/products/${product.id}/image`);
+          if (response.ok) {
+            const data = await response.json();
+            setImageUrl(data.imagePath);
+          } else {
+            setImageError(true);
+          }
+        } catch (error) {
+          console.error('Error fetching image:', error);
+          setImageError(true);
+        } finally {
+          setIsImageLoading(false);
+        }
+      };
+      fetchImage();
+    }
+  }, [product.id, product.imagePath]);
 
   const isInCart = items.some(item => item.product.id === product.id);
 
@@ -33,13 +57,17 @@ export function ProductCard({ product }) {
     <div className="group relative bg-card rounded-xl overflow-hidden card-shadow hover:card-shadow-hover transition-all duration-500 animate-fade-in">
       {/* Image Container */}
       <div className="relative aspect-square overflow-hidden bg-muted">
-        {imageError ? (
+        {isImageLoading ? (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Loader2 className="animate-spin text-muted-foreground" size={24} />
+          </div>
+        ) : imageError || !imageUrl ? (
           <div className="absolute inset-0 flex items-center justify-center bg-secondary">
             <span className="text-4xl">💍</span>
           </div>
         ) : (
           <img
-            src={product.imagePath}
+            src={imageUrl}
             alt={product.name}
             className="h-full w-full object-contain transition-transform duration-700 group-hover:scale-110"
             onError={() => setImageError(true)}

@@ -1,30 +1,12 @@
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { CategoryFilter } from './CategoryFilter';
 import { ProductCard } from './ProductCard';
 import { Skeleton } from './ui/skeleton';
+import { Button } from './ui/button';
 
-export function ProductGrid() {
-  const [products, setProducts] = useState([]);
+export function ProductGrid({ products = [], isLoading = true }) {
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchProducts() {
-      try {
-        const response = await fetch('/api/products');
-        if (response.ok) {
-          const data = await response.json();
-          setProducts(data);
-        }
-      } catch (error) {
-        console.error('Failed to fetch products:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchProducts();
-  }, []);
 
   const filteredProducts = useMemo(() => {
     if (selectedCategory === 'All') {
